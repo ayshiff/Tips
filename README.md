@@ -1,6 +1,6 @@
 # Documentation
 
-## Convention BEM
+## BEM convention
 
 ```html
 
@@ -57,10 +57,9 @@
 
 ## Pseudo attributs
 
-Les Pseudo attrbuts 'befor' et 'after' permettent de créer des noeuds HTML et CSS.
-Ils sont essentiellement utilisés pour ajouter des ornements, des décorations ... On peut bien entendu faire des animations avec, les positions par rapport à leur parent (relative / absolute).
-* Ils doivent obligatoirement avoir un 'content:
-* fin de s'afficher.
+Pseudo attrbuts 'befor' and 'after' allow you to create HTML and CSS nodes.
+They are basically used to add ornaments, decorations.
+* They must obligatorily have a 'content
 
 ```html
 <section class="cover">
@@ -110,18 +109,18 @@ padding: 20px;
 ````
 
 ### REM
-*le REM est basé sur la taille de la racine (soit la balsie html) qui, par défaut a une valeur de 16 px. Afin d'éviter tout calcul, il est nécessaire de l'écraser en donnant une base de 10px soit 62,5%. Le REM est intéressant à utiliser si les media-queries emplayées sont en rem également. Cela vous permettre de garder des proportions égales lorsqu'on va redimensionner la page. Ses proportions seront également gardées quand l'utilisateur zoomera dans votre page.*
+* The REM is based on the size of the root (ie the html tag) which, by default, has a value of 16 px. To avoid any calculation, it is necessary to crush it by giving a base of 10px or 62.5%. The REM is interesting to use if the used media-queries are in rem as well. This will allow you to keep equal proportions when resizing the page. Its proportions will also be kept when the user zooms in your page. *
 
 ## vw
 
-*Unités relatives à la taille de votre écran (peu importe le device)
-Attention au VH et à son contenu. 100vh === 100vh quoi qu'il arrive.
-VW : trés utiles pour les interfaces fluides.*
+* Units related to the size of your screen (no matter the device)
+Watch out for the VH and its contents. 100vh === 100vh whatever happens.
+VW: very useful for fluid interfaces. *
 
 
 ## flexboxgrid
 
-*Les modificateurs réactifs permettent de spécifier différentes tailles de colonnes, décalages, alignement et distribution aux largeurs de la fenêtre xs, sm, md & lg*
+* Reactive modifiers allow you to specify different column sizes, offsets, alignment, and distribution at window widths xs, sm, md & lg *
 
   ``HTML
   <div class="row">
@@ -135,7 +134,7 @@ VW : trés utiles pour les interfaces fluides.*
 ```
 
 ```css
-    voir flexboxgrid.min.css
+    see flexboxgrid.min.css
 ```
 
 https://github.com/h5bp/Front-end-Developer-Interview-Questions
@@ -188,12 +187,12 @@ main.js =>
 }
 ```
 
-Il suffit maintenant d'executer la commande parcel index.html pour démarrer le serveur de dev.
+You just have to run the parcel index.html command to start the dev server.
 
 
 ### Webpack
 
-Fichier de configuration basique webpack.config.js => 
+Basic configuration file webpack.config.js => 
 
 ```js
 const path = require('path');
@@ -272,4 +271,96 @@ The Store is the object that brings them together.
 
 [Medium Article about React Suspense](https://medium.com/@baphemot/understanding-react-suspense-1c73b4b0b1e6)
 
+# setState() in componentWillMount()
+
+Avoid async initialization in ``componentWillMount()``
+
+``componentWillMount()`` is invoked immediately before mounting occurs.
+It is called before ``render()``, therefore setting state in this method will not trigger a re-render.
+Avoid introducing any side-effects or subscriptions in this method.
+
+
+Make async calls for component initialization in ``componentDidMount`` instead of ``componentWillMount``
+```javascript
+function componentDidMount() {
+  axios.get(`api/messages`)
+    .then((result) => {
+      const messages = result.data
+      console.log("COMPONENT WILL Mount messages : ", messages);
+      this.setState({
+        messages: [...messages.content]
+      })
+    })
+}
+```
+
+## Apollo client example
+
+```js
+import React from 'react';
+import { render } from 'react-dom';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+
+// Pass your GraphQL endpoint to uri
+const client = new ApolloClient({ uri: 'https://nx9zvp49q7.lp.gql.zone/graphql' });
+
+const ApolloApp = () => (
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+);
+
+render(ApolloApp, document.getElementById('root'));
+```
+
+Let's create our `<App />` component and make our first query:
+
+```js
+import React from 'react';
+import { gql } from 'apollo-boost';
+import { Query } from 'react-apollo';
+
+const GET_DOG = gql`
+  query {
+    dog(breed: "bulldog") {
+      id
+      breed
+      displayImage
+    }
+  }
+`
+
+const App = () => (
+  <Query query={GET_DOG}>
+    {({ loading, error, data }) => {
+      if (loading) return <div>Loading...</div>;
+      if (error) return <div>Error :(</div>;
+
+      return (
+        <Dog url={data.dog.displayImage} breed={data.dog.breed} />
+      )
+    }}
+  </Query>
+)
+```
+
 ## Just a little bit of golang
+
+Simple test pointers :
+
+```go
+func add (a *int8) int8 {
+	*a++
+	return *a
+}
+
+func main () {
+    var test int8 = 0
+    var pointer = &test
+	add(pointer)
+	fmt.Println(test)
+}
+
+```
+
